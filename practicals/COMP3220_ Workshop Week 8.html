@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<!-- saved from url=(0087)https://ilearn.mq.edu.au/pluginfile.php/7014148/mod_resource/content/14/workshop-8.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title> COMP3220: Workshop Week 8</title>
+
+<style>
+body {
+  font-family: Verdana, Geneva, sans-serif;
+  margin: 35px;
+}
+
+pre {
+  font-size: 130%;    
+} 
+</style>
+
+</head>
+
+<body>
+
+<h2>Workshop Week 8</h2>
+
+<p>In this week's workshop, we will have a closer look at RDF, the RDF Mapping Language (RML), and the RDF query language SPARQL.</p>
+
+<h3>Your Tasks</h3>
+
+
+<h4>1. RDF</h4>
+
+<p>Below is a simple RDF document in RDF/XML notation that contains information about Bob.</p>  
+
+<pre>   &lt;?xml version="1.0" encoding="utf-8"?&gt;
+   &lt;rdf:RDF
+         xmlns:dcterms="http://purl.org/dc/terms/"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:schema="http://schema.org/"&gt;
+     &lt;rdf:Description rdf:about="http://example.org/bob#me"&gt;
+          &lt;rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/&gt;
+          &lt;schema:birthDate rdf:datatype="http://www.w3.org/2001/XMLSchema#date"&gt;1990-07-04&lt;/schema:birthDate&gt;
+          &lt;foaf:knows rdf:resource="http://example.org/alice#me"/&gt;
+          &lt;foaf:topic_interest rdf:resource="http://www.wikidata.org/entity/Q12418"/&gt;
+     &lt;/rdf:Description&gt;
+     &lt;rdf:Description rdf:about="http://www.wikidata.org/entity/Q12418"&gt;
+          &lt;dcterms:title&gt;Mona Lisa&lt;/dcterms:title&gt;
+          &lt;dcterms:creator rdf:resource="http://dbpedia.org/resource/Leonardo_da_Vinci"/&gt;
+     &lt;/rdf:Description&gt;
+     &lt;rdf:Description rdf:about="http://data.europeana.eu/item/04802/243FA8618938F4117025F17A8B813C5F9AA4D619"&gt;
+          &lt;dcterms:subject rdf:resource="http://www.wikidata.org/entity/Q12418"/&gt;
+     &lt;/rdf:Description&gt;
+   &lt;/rdf:RDF&gt;
+
+</pre>
+
+<p> Given this RDF document, do the following things on paper: </p>
+
+<ol>
+  <li> Draw the underlying RDF graph;</li>
+  <li> Translate the RDF/XML syntax by hand into Turtle syntax; </li>
+</ol>
+
+
+<h4>2. Constructing and Querying an RDF Knowledge Graph</h4>
+
+<p><a href="https://github.com/SDM-TIB/SDM-RDFizer">SDM-RDFizer</a> is a Python tool that allows you to
+  transform (un)structured data in different formats into an RDF knowledge graph. The SDM-RDFizer uses mapping
+  rules for this process. These rules are defined in the RDF Mapping Language (<a href="https://rml.io/specs/rml/">RML</a>).</p>
+
+<p>Download the folder 'workshop-rdf-knowledge-graph.zip' from iLearn. This folder contains a version of the
+  SDM RDFizer, two very simple csv files ('personality.csv' and 'sport.csv'), an incomplete file ('mapping.ttl')
+  where RML mapping rules need to be added, and an incomplete Python program ('kg-construction.py').</p>
+
+<p>The file 'personality.csv' contains the following information (note that the value for Sport is unknown for Demi Moore):</p>
+
+<pre>ID,Sport,Name
+10,100,Venus Williams
+20,,Demi Moore  
+</pre>
+
+<p> The file 'sport.csv' contains this information here:</p>
+
+<pre>ID,Name
+100,Tennis
+</pre>
+
+<p> The file 'mapping.ttl' currently contains only information about namespaces:</p>
+
+<pre>@prefix rr: &lt;http://www.w3.org/ns/r2rml#&gt; .
+@prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt; .
+@prefix rml: &lt;http://semweb.mmlab.be/ns/rml#&gt; .
+@prefix ql: &lt;http://semweb.mmlab.be/ns/ql#&gt; .
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
+@base &lt;http://example.com/base/&gt; .
+</pre>
+
+<p> The Python program 'kg-construction.py' below only contains the code that is used to run the SDM-RDFizer.
+    Run this code (for example, in Spyder), once you have added the mapping rules manually to the file
+    'mapping.ttl'.</p>
+<pre>import os
+
+os.system('python -m rdfizer -c ./config.ini')
+</pre>
+
+<p></p>
+
+Do the following things in this workshop:
+
+<ol>
+  <li> <p>Add mapping rules to the file 'mapping.ttl', so that the information in the two above-mentioned csv files can
+        be transformed into the following N-Triples:
+  </p><pre>&lt;http://example.com/resource/personality_10/&gt; &lt;http://xmlns.com/foaf/0.1/name/&gt; "Venus Williams".
+&lt;http://example.com/resource/personality_10/&gt; &lt;http://example.com/ontology/practises/&gt; &lt;http://example.com/resource/sport_100/&gt;.
+&lt;http://example.com/resource/personality_20/&gt; &lt;http://xmlns.com/foaf/0.1/name/&gt; "Demi Moore".
+&lt;http://example.com/resource/sport_100/&gt; &lt;http://www.w3.org/2000/01/rdf-schema#label/&gt; "Tennis".</pre>
+  <p>You can find details about how to use the RDF Mapping Language (RML) here: <a href="https://rml.io/specs/rml/">RML</a>.</p>
+  </li>
+  <li>
+  <p>Once the file 'mapping.ttl' is complete, run the Python program 'kg-construction.py' in order to construct the above-mentionned N-Triples.
+    If successful, these N-Triples will be added automatically to the newly generated file 'triples.nt' (the configuation file 'config.ini'
+    takes care about the details).</p>
+  </li>
+  <li>
+ <p>Now, add code to the Python program 'kg_construction.py' that reads the file 'triples.nt' into a graph
+      and then outputs these triples in turtle notation (you can find some pointers about how to do this in the lecture notes).
+      The output that is generated by the Python code should look as shown below. You can use the Python library 'rdflib' for this task. </p>
+    <pre>@prefix ns1: &lt;http://xmlns.com/foaf/0.1/&gt; .
+@prefix ns2: &lt;http://example.com/ontology/&gt; .
+@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
+@prefix xml: &lt;http://www.w3.org/XML/1998/namespace&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+      
+&lt;http://example.com/resource/personality_10&gt; ns2:practises &lt;http://example.com/resource/sport_100&gt; ;
+                                             ns1:name "Venus Williams" .
+&lt;http://example.com/resource/personality_20&gt; ns1:name "Demi Moore" .
+&lt;http://example.com/resource/sport_100&gt; rdfs:label "Tennis" .</pre>
+  </li>
+  <li>
+    <p>Add additional code to the Python program 'kg_construction.py' that answers the following question:
+    "What is the name of the personality that practises tennis?".
+    You have to translated this question into a SPARQL query, execute the SPARQL query, and display the
+    answer to this query in JSON notation. Again, you can find some pointers about how to do this in the lecture notes.
+    The answer to the SPARQL query should look as follows:</p>
+    <pre>{"results": {"bindings": [{"who": {"type": "literal", "value": "Venus Williams"}}]}, "head": {"vars": ["who"]}}</pre>
+  </li>
+</ol>
+        
+
+</body></html>
